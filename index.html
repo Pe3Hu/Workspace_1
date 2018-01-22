@@ -73,12 +73,13 @@
         <script src="libs/OrbitControls.js"></script>
         <script src="libs/Detector.js"></script>
         <script src="libs/stats.min.js"></script>
+        <script src="libs/ColladaLoader.js"></script>
         <script>
             if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
             var scenes = [], views, t, canvas, renderer;
             window.onload = init;
             function init() {
-                var balls = 5;
+                var balls = 40;
                 var size = .25;
                 var colors = [
                     'rgb(0,127,255)', 'rgb(255,0,0)', 'rgb(0,255,0)', 'rgb(0,255,255)',
@@ -95,7 +96,7 @@
                     var geometry = new THREE.Geometry();
                     var geometry0 = new THREE.Geometry();
                     if ( views[n].lattice ) {
-                        var range = balls / 2;
+                        var range = balls / 20;
                         for ( var i = -range ; i <= range ; i++ ) {
                             for ( var j = -range ; j <= range ; j++ ) {
                                 for ( var k = -range ; k <= range ; k++ ) {
@@ -105,14 +106,19 @@
                             }
                         }
                     } else {
-                        for ( var m = 0 ; m < Math.pow( balls, 4 ) ; m++ ) {
-                            var i = balls * Math.random() - balls / 2;
-                            var j = balls * Math.random() - balls / 2;
-                            var k = balls * Math.random() - balls / 2;
+                        for ( var m = 0 ; m < Math.pow( balls, 2 ) ; m++ ) {
+                            var i = (balls * Math.random() - balls) / 20;
+                            var j = (balls * Math.random() - balls) / 20;
+                            var k = (balls * Math.random() - balls) / 20;
                             geometry.vertices.push( new THREE.Vector3( i, j, k ) );
                             geometry0.vertices.push( new THREE.Vector3( i, j, k ) );
                         }
                     }
+                    var loader = new THREE.ColladaLoader();
+                    loader.load("Bitcoin.dae", function (result) {
+                    scene.add(result.scene);
+                    });
+                    //loader.scale()
                     var index = Math.floor( colors.length * Math.random() );
                     var canvas2 = document.createElement( 'canvas' );
                     canvas2.width = 128;
@@ -185,19 +191,23 @@
         <script>
             var parent = document.scripts[ document.scripts.length - 1 ].parentNode;
             parent.displacement = function( x, y, z, t ) {
-                var x1 = Math.sin(x + t), 
-                y1 = 0,//Math.cos(y + t), 
-                z1 = 0,//Math.cos(z + t), 
-                m = 0.8 ;
-                if (Math.abs(x1)>m) 
+               /* var x1 = Math.sin(x - t), 
+                y1 = Math.sin(y - t), 
+                z1 = Math.sin(z - t), 
+                m = 0;
+                if (x1<m) 
                     x1 =m;
-                if (Math.abs(y1)>m) 
+                if (y1<m) 
                     y1 =m;
-                if (Math.abs(z1)>m) 
-                    z1 =m;
-                return new THREE.Vector3( x1, y1, z1);// Math.cos(z + t)); -Math.sin(y - t)
+                if (z1<m) 
+                    z1 =;
+                */
+                
+                //return new THREE.Vector3( x, y, z);
+                //return new THREE.Vector3( x*Math.sign(Math.sin(t))*Math.sin(t)/2, y*Math.sign(Math.sin(t))*Math.sin(t)/2, z*Math.sign(Math.sin(t))*Math.sin(t)/2);//Math.sin(y+t), Math.sin(z+t));// Math.cos(z + t)); -Math.sin(y - t)
+                return new THREE.Vector3( x*Math.sign(Math.sin(t))*Math.sin(t)/2, y*Math.sign(Math.sin(t))*Math.sin(t)/2, z*Math.sign(Math.sin(t))*Math.sin(t)/2);
             };
-            parent.lattice = false;
+            parent.lattice = true;
         </script>
 
         </div>
